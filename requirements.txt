@@ -1,1 +1,6 @@
 pydantic>=2.0,<3.0
+
+# Medical imaging layer
+nibabel>=5.3.2
+numpy>=1.23.5
+clabtoolkit>=0.4.3
