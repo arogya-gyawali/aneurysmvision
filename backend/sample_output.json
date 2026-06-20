@@ -1,0 +1,176 @@
+{
+  "job_id": "av-20250620-7f3a9c2e",
+  "status": "completed",
+  "created_at": "2025-06-20T14:32:08.412Z",
+  "completed_at": "2025-06-20T14:34:51.887Z",
+  "study": {
+    "nifti_path": "/data/bids/sub-042/ses-01/anat/sub-042_ses-01_acq-3d_tof_run-1_angio.nii.gz",
+    "bids": {
+      "sub": "042",
+      "ses": "01",
+      "acq": "3d_tof",
+      "run": "1",
+      "suffix": "angio",
+      "extension": "nii.gz"
+    },
+    "shape": [512, 512, 180],
+    "voxel_dimensions_mm": {
+      "x": 0.390625,
+      "y": 0.390625,
+      "z": 0.600000
+    },
+    "modality": "TOF-MRA",
+    "affine": [
+      [-0.390625, 0.0, 0.0, 95.804688],
+      [0.0, 0.390625, 0.0, -126.195312],
+      [0.0, 0.0, 0.600000, -72.300003],
+      [0.0, 0.0, 0.0, 1.0]
+    ],
+    "quality": {
+      "snr": 18.42,
+      "motion_score": 0.08,
+      "contrast_to_noise": 12.7,
+      "passed_qc": true,
+      "notes": [
+        "Adequate vessel contrast for aneurysm detection.",
+        "Minor motion artifact in inferior slices; within acceptable range."
+      ]
+    }
+  },
+  "aneurysms": [
+    {
+      "id": "aneurysm-001",
+      "label": 1,
+      "location": "anterior_communicating_artery",
+      "location_detail": "AComA, projecting anteriorly",
+      "confidence": 0.94,
+      "centroid_voxel": [248.3, 291.7, 94.2],
+      "centroid_mm": [-1.2, -12.4, -15.8],
+      "roi_bounds_voxel": [236, 261, 278, 305, 86, 103],
+      "biomarkers": {
+        "volume_mm3": 42.8,
+        "max_diameter_mm": 4.6,
+        "neck_width_mm": 2.1,
+        "dome_height_mm": 3.9,
+        "aspect_ratio": 1.86,
+        "size_ratio": 1.42,
+        "irregularity_index": 1.12
+      },
+      "mesh": {
+        "format": "glb",
+        "path": "/artifacts/av-20250620-7f3a9c2e/meshes/aneurysm-001.glb",
+        "vertex_count": 3842,
+        "face_count": 7616
+      }
+    },
+    {
+      "id": "aneurysm-002",
+      "label": 2,
+      "location": "middle_cerebral_artery",
+      "location_detail": "Left MCA bifurcation, M1 segment",
+      "confidence": 0.87,
+      "centroid_voxel": [312.1, 198.4, 88.6],
+      "centroid_mm": [26.1, 48.7, -19.2],
+      "roi_bounds_voxel": [302, 323, 186, 211, 80, 97],
+      "biomarkers": {
+        "volume_mm3": 18.3,
+        "max_diameter_mm": 3.1,
+        "neck_width_mm": 1.8,
+        "dome_height_mm": 2.4,
+        "aspect_ratio": 1.33,
+        "size_ratio": 1.08,
+        "irregularity_index": 1.05
+      },
+      "mesh": {
+        "format": "glb",
+        "path": "/artifacts/av-20250620-7f3a9c2e/meshes/aneurysm-002.glb",
+        "vertex_count": 2104,
+        "face_count": 4188
+      }
+    }
+  ],
+  "aneurysm_count": 2,
+  "report": {
+    "summary": "Two cerebral aneurysms were detected on 3D TOF-MRA. The largest lesion is a 4.6 mm saccular aneurysm at the anterior communicating artery (AComA) with an aspect ratio of 1.86, suggesting moderate rupture risk. A second 3.1 mm aneurysm is present at the left MCA bifurcation.",
+    "findings": [
+      "AComA aneurysm: 4.6 mm maximum diameter, volume 42.8 mm³, neck width 2.1 mm.",
+      "Left MCA bifurcation aneurysm: 3.1 mm maximum diameter, volume 18.3 mm³.",
+      "No evidence of subarachnoid hemorrhage on available sequences.",
+      "Image quality adequate for morphometric assessment (SNR 18.4)."
+    ],
+    "recommendations": [
+      "Neurosurgical or interventional radiology consultation recommended for the AComA aneurysm given size and aspect ratio.",
+      "Follow-up MRA in 6–12 months for the MCA aneurysm if conservative management is chosen.",
+      "Consider CTA or DSA for treatment planning if intervention is pursued."
+    ],
+    "model": "claude-sonnet-4-20250514",
+    "generated_at": "2025-06-20T14:34:49.201Z"
+  },
+  "stages": [
+    {
+      "name": "bids_parse",
+      "status": "completed",
+      "duration_ms": 42,
+      "message": null,
+      "error": null
+    },
+    {
+      "name": "nifti_load",
+      "status": "completed",
+      "duration_ms": 318,
+      "message": null,
+      "error": null
+    },
+    {
+      "name": "quality_control",
+      "status": "completed",
+      "duration_ms": 891,
+      "message": "QC passed",
+      "error": null
+    },
+    {
+      "name": "detection",
+      "status": "completed",
+      "duration_ms": 45230,
+      "message": null,
+      "error": null
+    },
+    {
+      "name": "roi_extraction",
+      "status": "completed",
+      "duration_ms": 156,
+      "message": null,
+      "error": null
+    },
+    {
+      "name": "biomarkers",
+      "status": "completed",
+      "duration_ms": 89,
+      "message": null,
+      "error": null
+    },
+    {
+      "name": "mesh_generation",
+      "status": "completed",
+      "duration_ms": 1240,
+      "message": "2 GLB meshes exported",
+      "error": null
+    },
+    {
+      "name": "report_generation",
+      "status": "completed",
+      "duration_ms": 4820,
+      "message": null,
+      "error": null
+    }
+  ],
+  "cache_key": "av:sub-042:ses-01",
+  "errors": [],
+  "metadata": {
+    "pipeline_version": "0.1.0",
+    "transport": "in_process",
+    "detection_model": "connectomicslab-sliding-window-v1",
+    "clabtoolkit_version": "0.4.3",
+    "processing_time_ms": 163786
+  }
+}
