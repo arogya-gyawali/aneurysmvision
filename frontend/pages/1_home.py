@@ -1,4 +1,9 @@
-"""Home / Landing — first impression, workflow at a glance, recent sessions."""
+"""Home / Landing — upload and the entire read happens automatically, right here.
+
+No step buttons, no clicking through separate pages: dropping a scan
+triggers detection, measurements, the labeled 3D vessel map, and the AI
+summary in one continuous scroll.
+"""
 
 from __future__ import annotations
 
@@ -9,8 +14,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from frontend import data_client as dc
-from frontend.components import layout, patient_panel
+from frontend.components import auto_report, intake, layout
 from frontend.components.mock_sessions import recent_sessions
 
 result = layout.require_result()
@@ -21,65 +25,27 @@ st.markdown(
     <div style="padding: 0.5rem 0 0.5rem 0;">
         <h1 class="av-gradient-text" style="margin-bottom:0.25rem; font-weight:800;">Vascular review, without the busywork</h1>
         <p style="color:var(--av-text-secondary); font-size:1.05rem; max-width:680px;">
-            Upload a BIDS scan, let detection find candidate aneurysms, then walk through
-            3D reconstruction, cross-sections, measurements, and an AI-drafted summary —
-            all in one calm workspace.
+            Drop a patient's scan below — detection, 3D reconstruction with every
+            vessel labeled, measurements, and an AI-drafted summary all run
+            automatically, right here, with no extra clicks.
         </p>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
-cta_l, cta_r = st.columns(2)
-with cta_l:
-    if st.button("📤 Upload BIDS Folder", type="primary", width="stretch"):
-        st.switch_page("pages/2_upload.py")
-with cta_r:
-    if st.button("🧪 Load Demo Patient (sample data)", width="stretch"):
-        st.session_state["av_result"] = dc.get_sample_result()
-        st.session_state.pop("av_selected_id", None)
-        st.success("Demo patient loaded — try the workflow below.")
-        st.rerun()
-
-st.markdown("")
-steps = [
-    ("📤", "Upload", "pages/2_upload.py"),
-    ("🎯", "Select ROI", "pages/4_roi_selection.py"),
-    ("🧠", "3D View", "pages/5_3d_visualization.py"),
-    ("🩻", "Slices", "pages/6_cross_sections.py"),
-    ("📏", "Measure", "pages/7_measurements.py"),
-    ("🤖", "AI Summary", "pages/8_ai_summary.py"),
-    ("📄", "Export", "pages/9_report_export.py"),
-]
-_STEP_ACCENTS = ["accent-blue", "accent-teal", "accent-purple"]
-cols = st.columns(len(steps))
-for idx, (col, (icon, label, page)) in enumerate(zip(cols, steps)):
-    with col:
-        st.markdown(
-            f"<div class='av-card {_STEP_ACCENTS[idx % 3]}' style='text-align:center;padding:0.75rem 0.4rem;'>"
-            f"<span style='font-size:1.4rem;'>{icon}</span><br/>{label}</div>",
-            unsafe_allow_html=True,
-        )
+intake.render(key_prefix="home")
 
 st.markdown("---")
 
+result = layout.require_result()
 if result:
-    st.markdown("<div class='av-section-header'>Current Patient</div>", unsafe_allow_html=True)
-    if dc.is_demo(result):
-        st.info("Demo mode — this is `backend/sample_output.json`, standing in for the live pipeline.", icon="ℹ️")
-    patient_panel.render(result)
-    nav_l, nav_r = st.columns(2)
-    with nav_l:
-        if st.button("Continue to Patient Overview →", width="stretch"):
-            st.switch_page("pages/3_patient_overview.py")
-    with nav_r:
-        if st.button("Skip to 3D Visualization →", width="stretch"):
-            st.switch_page("pages/5_3d_visualization.py")
+    auto_report.render(result)
 else:
     layout.empty_state(
         "🧠",
         "No patient loaded yet",
-        "Upload a BIDS folder or load the demo patient above to start a review.",
+        "Drop a BIDS-named scan or load the demo patient above — the full read will appear here automatically.",
     )
 
 st.markdown("---")
