@@ -127,12 +127,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-action_cols = st.columns(4)
+action_cols = st.columns(2)
 actions = [
-    ("🧪", "Demo Patient", "Load sample data", "demo"),
-    ("📤", "Upload Scan", "Bring your own BIDS file", "pages/2_upload.py"),
-    ("🎯", "ROI Selection", "Review detected regions", "pages/4_roi_selection.py"),
-    ("🧠", "3D Visualization", "Explore the reconstruction", "pages/5_3d_visualization.py"),
+    ("🧪", "Demo Patient", "Load sample data and see the full automatic read", "demo"),
+    ("📤", "Upload a Scan", "Drop a BIDS file on Home — analysis runs automatically", "pages/1_home.py"),
 ]
 for col, (icon, title, desc, target) in zip(action_cols, actions):
     with col:
@@ -150,11 +148,7 @@ for col, (icon, title, desc, target) in zip(action_cols, actions):
             if target == "demo":
                 st.session_state["av_result"] = dc.get_sample_result()
                 st.session_state.pop("av_selected_id", None)
-                st.rerun()
-            else:
-                if not result and target != "pages/2_upload.py":
-                    st.session_state["av_result"] = dc.get_sample_result()
-                st.switch_page(target)
+            st.switch_page("pages/1_home.py")
 
 st.markdown(
     """
@@ -234,8 +228,8 @@ with brain_r:
     if st.button("Explore Brain / Aneurysm Workflow →", type="primary", use_container_width=True):
         if not result:
             st.session_state["av_result"] = dc.get_sample_result()
-        st.switch_page("pages/5_3d_visualization.py")
-    st.caption("Jumps straight into 3D visualization with the active (or demo) patient — no extra clicks.")
+        st.switch_page("pages/1_home.py")
+    st.caption("Jumps straight to Home with the active (or demo) patient — the full automatic read appears there, no extra clicks.")
 
 st.markdown("")
 soon_cols = st.columns(3)

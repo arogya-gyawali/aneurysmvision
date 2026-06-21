@@ -22,7 +22,7 @@ with c1:
 with c2:
     density = st.radio("Layout density", ["Comfortable", "Compact"], horizontal=True)
     st.session_state["av_density"] = density
-st.caption("Theme (light, clinical blue/teal palette) is fixed for visual consistency across the app — see `.streamlit/config.toml`.")
+st.caption("Use the Dark/Light mode toggle in the sidebar to switch themes.")
 
 st.markdown("---")
 st.markdown("<div class='av-section-header'>3D Viewer Defaults</div>", unsafe_allow_html=True)
@@ -35,8 +35,9 @@ st.session_state["av_default_opacity"] = d4.slider("Default opacity", 0.2, 1.0, 
 st.markdown("---")
 st.markdown("<div class='av-section-header'>Help Guide</div>", unsafe_allow_html=True)
 st.markdown(
-    "**Suggested workflow:** Upload → ROI Selection → 3D Visualization → Cross-Sections → "
-    "Measurements → AI Summary → Report & Export."
+    "**How it works:** go to **Home** and drop a BIDS-named scan (or load the demo patient). "
+    "Detection, the labeled 3D vessel map, cross-sections, measurements, and the AI summary all "
+    "run and render automatically on that one screen — no separate steps to click through."
 )
 
 with st.expander("Glossary — what does this mean?"):

@@ -21,8 +21,6 @@ _STAGE_LABELS = {
 
 
 def render(stages: list[dict[str, Any]], metadata: dict[str, Any] | None = None, cache_key: str | None = None) -> None:
-    st.markdown("<div class='av-section-header'>Pipeline Status</div>", unsafe_allow_html=True)
-
     if not stages:
         st.caption("No stage timing available yet.")
         return

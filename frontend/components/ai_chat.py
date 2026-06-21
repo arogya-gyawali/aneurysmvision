@@ -67,7 +67,6 @@ def _ask_claude(question: str, report: dict | None, bio: dict) -> str | None:
 def render(report: dict[str, Any] | None, finding: dict[str, Any] | None) -> None:
     bio = (finding or {}).get("biomarkers", {}) or {}
 
-    st.markdown("<div class='av-section-header'>Ask a Follow-up Question</div>", unsafe_allow_html=True)
     st.caption("Answers are generated from this study's data only and require physician review.")
 
     history: list[dict[str, str]] = st.session_state.setdefault("av_chat_history", [])

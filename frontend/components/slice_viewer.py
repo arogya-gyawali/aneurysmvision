@@ -46,10 +46,7 @@ def render(study: dict[str, Any], finding: dict[str, Any] | None) -> None:
     shape = study.get("shape") or [256, 256, 150]
     centroid_voxel = (finding or {}).get("centroid_voxel")
 
-    st.markdown(
-        f"<div class='av-section-header'>Cross-Section Viewer {mock_tag('Synthetic preview')}</div>",
-        unsafe_allow_html=True,
-    )
+    st.markdown(mock_tag("Synthetic preview"), unsafe_allow_html=True)
     st.caption("Real slice rendering is pending a backend NIfTI export endpoint. Positions are derived from the selected ROI's voxel centroid.")
 
     tabs = st.tabs(list(_PLANES.keys()))

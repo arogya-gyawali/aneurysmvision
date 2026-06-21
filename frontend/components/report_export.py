@@ -86,8 +86,6 @@ def _build_pdf(markdown_text: str) -> bytes | None:
 
 
 def render(result: dict[str, Any]) -> None:
-    st.markdown("<div class='av-section-header'>Export Report</div>", unsafe_allow_html=True)
-
     markdown_text = build_markdown_report(result)
     job_id = result.get("job_id", "report")
 
