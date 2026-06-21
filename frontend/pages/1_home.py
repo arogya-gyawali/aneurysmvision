@@ -19,7 +19,7 @@ layout.top_bar(result, "Home")
 st.markdown(
     """
     <div style="padding: 0.5rem 0 0.5rem 0;">
-        <h1 style="margin-bottom:0.25rem;">Vascular review, without the busywork</h1>
+        <h1 class="av-gradient-text" style="margin-bottom:0.25rem; font-weight:800;">Vascular review, without the busywork</h1>
         <p style="color:#64748b; font-size:1.05rem; max-width:680px;">
             Upload a BIDS scan, let detection find candidate aneurysms, then walk through
             3D reconstruction, cross-sections, measurements, and an AI-drafted summary —
@@ -51,11 +51,13 @@ steps = [
     ("🤖", "AI Summary", "pages/8_ai_summary.py"),
     ("📄", "Export", "pages/9_report_export.py"),
 ]
+_STEP_ACCENTS = ["accent-blue", "accent-teal", "accent-purple"]
 cols = st.columns(len(steps))
-for col, (icon, label, page) in zip(cols, steps):
+for idx, (col, (icon, label, page)) in enumerate(zip(cols, steps)):
     with col:
         st.markdown(
-            f"<div class='av-card' style='text-align:center;padding:0.75rem 0.4rem;'>{icon}<br/>{label}</div>",
+            f"<div class='av-card {_STEP_ACCENTS[idx % 3]}' style='text-align:center;padding:0.75rem 0.4rem;'>"
+            f"<span style='font-size:1.4rem;'>{icon}</span><br/>{label}</div>",
             unsafe_allow_html=True,
         )
 

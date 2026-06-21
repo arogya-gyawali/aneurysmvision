@@ -53,9 +53,9 @@ def render(result: dict[str, Any]) -> None:
 
     cols = st.columns(6)
     cards = [
-        _metric_card("Subject", f"sub-{bids.get('sub', '—')}", f"ses-{bids.get('ses')}" if bids.get("ses") else "no session"),
-        _metric_card("Modality", study.get("modality", "TOF-MRA"), shape_str),
-        _metric_card("Voxel size", voxel_str),
+        _metric_card("Subject", f"sub-{bids.get('sub', '—')}", f"ses-{bids.get('ses')}" if bids.get("ses") else "no session", accent="#2563eb"),
+        _metric_card("Modality", study.get("modality", "TOF-MRA"), shape_str, accent="#7c3aed"),
+        _metric_card("Voxel size", voxel_str, accent="#0d9488"),
         _metric_card("Quality control", qc_label, f"SNR {quality.get('snr', '—')}", accent=qc_color),
         _metric_card("Job status", status.upper(), result.get("job_id", "—"), accent=status_color),
         _metric_card(

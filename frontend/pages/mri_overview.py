@@ -25,26 +25,14 @@ layout.top_bar(result, "MRI")
 st.markdown(
     """
     <style>
-    [data-testid="stAppViewContainer"], .stApp, .main, .block-container { background: transparent !important; }
-    .av-mri-bg {
-        position: fixed; inset: 0; z-index: -1; overflow: hidden;
-        pointer-events: none; background: #f8fafc;
-    }
-    .av-mri-bg .ring {
-        position: absolute; top: 50%; left: 50%; filter: grayscale(1);
-        transform: translate(-50%, -50%);
-    }
-    .av-mri-bg .ring.outer { font-size: 34rem; opacity: 0.05; animation: av-spin-cw 40s linear infinite; }
-    .av-mri-bg .ring.inner { font-size: 19rem; opacity: 0.045; animation: av-spin-ccw 24s linear infinite; }
-    @keyframes av-spin-cw  { from { transform: translate(-50%,-50%) rotate(0deg); }   to { transform: translate(-50%,-50%) rotate(360deg); } }
-    @keyframes av-spin-ccw { from { transform: translate(-50%,-50%) rotate(360deg); } to { transform: translate(-50%,-50%) rotate(0deg); } }
     .av-mri-card { background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:1.1rem 1.25rem;
-                   box-shadow:0 1px 3px rgba(15,23,42,0.06); height:100%; }
+                   box-shadow:0 1px 3px rgba(15,23,42,0.06); height:100%; border-top:3px solid var(--av-teal);
+                   transition: transform 0.15s ease, box-shadow 0.15s ease; }
+    .av-mri-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(15,23,42,0.10); }
     .av-mri-card h4 { margin:0 0 0.35rem 0; font-size:0.98rem; color:#0f172a; }
     .av-mri-card p { margin:0; font-size:0.82rem; color:#64748b; line-height:1.4; }
     .av-mri-soon { background:#f8fafc; border:1px dashed #cbd5e1; border-radius:12px; padding:0.9rem 1.1rem; }
     </style>
-    <div class="av-mri-bg"><div class="ring outer">🧠</div><div class="ring inner">🧠</div></div>
     """,
     unsafe_allow_html=True,
 )
@@ -52,7 +40,7 @@ st.markdown(
 st.markdown(
     """
     <div style="padding: 0.5rem 0 0.25rem 0;">
-        <h1 style="margin-bottom:0.25rem;">What is MRI?</h1>
+        <h1 class="av-gradient-text" style="margin-bottom:0.25rem; font-weight:800;">What is MRI?</h1>
         <p style="color:#475569; font-size:1.05rem; max-width:760px;">
             Magnetic Resonance Imaging (MRI) uses strong magnetic fields and radio waves —
             no ionizing radiation — to produce detailed cross-sectional images of soft tissue,
@@ -77,33 +65,43 @@ with quick_r:
         st.switch_page("pages/2_upload.py")
 
 st.markdown("---")
+_ACCENTS = ["var(--av-blue)", "var(--av-teal)", "var(--av-purple)"]
+
+
+def _mri_card(icon: str, title: str, desc: str, accent: str) -> str:
+    return (
+        f"<div class='av-mri-card' style='border-top-color:{accent};'>"
+        f"<h4>{icon} {title}</h4><p>{desc}</p></div>"
+    )
+
+
 st.markdown("<div class='av-section-header'>What AI-Assisted MRI Analysis Includes</div>", unsafe_allow_html=True)
 overview_cards = [
-    ("Multi-Sequence Analysis", "Reads across sequences (T1, T2, FLAIR, TOF, etc.) for a fuller picture than any single sequence alone."),
-    ("Tissue Characterization", "Differentiates normal from abnormal tissue patterns to flag regions worth a closer look."),
-    ("Rapid Processing", "Surfaces structured findings in a fraction of the time of a fully manual read."),
-    ("Multi-Organ Compatibility", "The same underlying approach extends to brain, spine, joints, and beyond — brain is what's implemented today."),
+    ("🩻", "Multi-Sequence Analysis", "Reads across sequences (T1, T2, FLAIR, TOF, etc.) for a fuller picture than any single sequence alone."),
+    ("🔬", "Tissue Characterization", "Differentiates normal from abnormal tissue patterns to flag regions worth a closer look."),
+    ("⚡", "Rapid Processing", "Surfaces structured findings in a fraction of the time of a fully manual read."),
+    ("🫀", "Multi-Organ Compatibility", "The same underlying approach extends to brain, spine, joints, and beyond — brain is what's implemented today."),
 ]
 cols = st.columns(4)
-for col, (title, desc) in zip(cols, overview_cards):
+for idx, (col, (icon, title, desc)) in enumerate(zip(cols, overview_cards)):
     with col:
-        st.markdown(f"<div class='av-mri-card'><h4>{title}</h4><p>{desc}</p></div>", unsafe_allow_html=True)
+        st.markdown(_mri_card(icon, title, desc, _ACCENTS[idx % 3]), unsafe_allow_html=True)
 
 st.markdown("")
 st.markdown("<div class='av-section-header'>Key Capabilities</div>", unsafe_allow_html=True)
 feature_cards = [
-    ("Advanced Segmentation", "Delineates structures precisely enough to support reliable measurements."),
-    ("Contrast Enhancement Analysis", "Assesses perfusion and lesion characteristics on contrast-enhanced scans."),
-    ("Diffusion Tensor Imaging (DTI)", "Visualizes white-matter tracts for neurological assessment."),
-    ("Longitudinal Comparison", "Tracks change against prior scans to monitor progression or treatment response."),
-    ("Quantitative Measurements", "Volumetric and dimensional measurements to support treatment planning."),
-    ("Multi-Planar Reconstruction", "Axial, sagittal, and coronal views from a single acquisition."),
+    ("🧩", "Advanced Segmentation", "Delineates structures precisely enough to support reliable measurements."),
+    ("💉", "Contrast Enhancement Analysis", "Assesses perfusion and lesion characteristics on contrast-enhanced scans."),
+    ("🕸️", "Diffusion Tensor Imaging (DTI)", "Visualizes white-matter tracts for neurological assessment."),
+    ("📈", "Longitudinal Comparison", "Tracks change against prior scans to monitor progression or treatment response."),
+    ("📐", "Quantitative Measurements", "Volumetric and dimensional measurements to support treatment planning."),
+    ("🧭", "Multi-Planar Reconstruction", "Axial, sagittal, and coronal views from a single acquisition."),
 ]
 for row_start in range(0, len(feature_cards), 3):
     row_cols = st.columns(3)
-    for col, (title, desc) in zip(row_cols, feature_cards[row_start:row_start + 3]):
+    for idx, (col, (icon, title, desc)) in enumerate(zip(row_cols, feature_cards[row_start:row_start + 3])):
         with col:
-            st.markdown(f"<div class='av-mri-card'><h4>{title}</h4><p>{desc}</p></div>", unsafe_allow_html=True)
+            st.markdown(_mri_card(icon, title, desc, _ACCENTS[(row_start + idx) % 3]), unsafe_allow_html=True)
     st.markdown("")
 
 st.markdown("---")

@@ -23,9 +23,37 @@ _CSS = """
 :root {
     --av-blue: #2563eb;
     --av-teal: #0d9488;
+    --av-purple: #7c3aed;
     --av-bg-soft: #f8fafc;
     --av-border: #e2e8f0;
 }
+
+[data-testid="stAppViewContainer"], .stApp, .main, .block-container { background: transparent !important; }
+
+.av-bg-wrap {
+    position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
+    background: #f8fafc;
+}
+.av-bg-wrap .blob {
+    position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.16;
+}
+.av-bg-wrap .blob.b1 { width: 32rem; height: 32rem; top: -8rem; left: -6rem; background: var(--av-blue); animation: av-orbit-a 50s linear infinite; }
+.av-bg-wrap .blob.b2 { width: 26rem; height: 26rem; bottom: -6rem; right: -4rem; background: var(--av-teal); animation: av-orbit-b 60s linear infinite; }
+.av-bg-wrap .blob.b3 { width: 22rem; height: 22rem; top: 40%; left: 60%; background: var(--av-purple); animation: av-orbit-a 70s linear infinite reverse; }
+.av-bg-wrap .brain {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 30rem; line-height: 1; opacity: 0.07;
+    filter: saturate(2.2) hue-rotate(195deg) brightness(1.3);
+    animation: av-spin-cw 50s linear infinite;
+}
+.av-bg-wrap .brain.inner {
+    font-size: 17rem; opacity: 0.06; animation: av-spin-ccw 30s linear infinite;
+    filter: saturate(2.4) hue-rotate(150deg) brightness(1.3);
+}
+@keyframes av-spin-cw  { from { transform: translate(-50%,-50%) rotate(0deg); }   to { transform: translate(-50%,-50%) rotate(360deg); } }
+@keyframes av-spin-ccw { from { transform: translate(-50%,-50%) rotate(360deg); } to { transform: translate(-50%,-50%) rotate(0deg); } }
+@keyframes av-orbit-a { from { transform: rotate(0deg) translateX(2rem); } to { transform: rotate(360deg) translateX(2rem); } }
+@keyframes av-orbit-b { from { transform: rotate(0deg) translateX(-3rem); } to { transform: rotate(-360deg) translateX(-3rem); } }
 
 .block-container { padding-top: 1.5rem; max-width: 1400px; }
 
@@ -33,7 +61,7 @@ _CSS = """
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+    background: linear-gradient(135deg, #1e3a8a 0%, #4c1d95 55%, #0d9488 100%);
     border-radius: 14px;
     padding: 0.9rem 1.5rem;
     margin-bottom: 1.25rem;
@@ -49,7 +77,13 @@ _CSS = """
     padding: 1rem 1.25rem;
     box-shadow: 0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
     border: 1px solid var(--av-border);
+    border-top: 3px solid transparent;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
+.av-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(15,23,42,0.10); }
+.av-card.accent-blue   { border-top-color: var(--av-blue); }
+.av-card.accent-teal   { border-top-color: var(--av-teal); }
+.av-card.accent-purple { border-top-color: var(--av-purple); }
 .av-card-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: .06em; color: #64748b; font-weight: 700; }
 .av-card-value { font-size: 1.5rem; font-weight: 700; color: #0f172a; margin-top: 0.15rem; line-height: 1.2; }
 .av-card-sub { font-size: 0.75rem; color: #94a3b8; margin-top: 0.2rem; }
@@ -59,8 +93,17 @@ _CSS = """
     font-weight: 700; font-size: 0.78rem; letter-spacing: .02em;
 }
 
-.av-section-header { font-size: 1.05rem; font-weight: 700; color: #0f172a; margin: 0.25rem 0 0.75rem 0; }
+.av-section-header {
+    font-size: 1.05rem; font-weight: 700; color: #0f172a; margin: 0.25rem 0 0.75rem 0;
+    padding-left: 0.65rem; border-left: 4px solid var(--av-blue);
+}
 .av-caption-muted { color: #94a3b8; font-size: 0.82rem; }
+
+.av-gradient-text {
+    background: linear-gradient(90deg, var(--av-blue), var(--av-purple), var(--av-teal)) !important;
+    -webkit-background-clip: text !important; background-clip: text !important;
+    color: transparent !important; -webkit-text-fill-color: transparent !important;
+}
 
 .av-empty-state {
     text-align: center; padding: 3rem 1.5rem; border: 1.5px dashed var(--av-border);
@@ -77,6 +120,13 @@ _CSS = """
 
 [data-testid="stSidebarNav"] { padding-top: 0.5rem; }
 </style>
+<div class="av-bg-wrap">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+    <div class="brain">🧠</div>
+    <div class="brain inner">🧠</div>
+</div>
 """
 
 
