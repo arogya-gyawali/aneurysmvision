@@ -69,7 +69,11 @@ def _build_css(theme: str) -> str:
 }}
 
 [data-testid="stAppViewContainer"], .stApp, .main, .block-container {{ background: transparent !important; }}
-html, body, [data-testid="stMarkdownContainer"] {{ color: var(--av-text-primary); }}
+html, body {{ background: {t['page_bg']}; color: var(--av-text-primary); }}
+[data-testid="stMarkdownContainer"] {{ color: var(--av-text-primary); }}
+[data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDecoration"] {{
+    background: transparent !important; background-color: transparent !important; box-shadow: none !important;
+}}
 * {{ transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease; }}
 
 .av-bg-wrap {{
