@@ -20,7 +20,7 @@ st.markdown(
     """
     <div style="padding: 0.5rem 0 0.5rem 0;">
         <h1 class="av-gradient-text" style="margin-bottom:0.25rem; font-weight:800;">Vascular review, without the busywork</h1>
-        <p style="color:#64748b; font-size:1.05rem; max-width:680px;">
+        <p style="color:var(--av-text-secondary); font-size:1.05rem; max-width:680px;">
             Upload a BIDS scan, let detection find candidate aneurysms, then walk through
             3D reconstruction, cross-sections, measurements, and an AI-drafted summary —
             all in one calm workspace.

@@ -49,7 +49,7 @@ def render(finding: dict[str, Any]) -> None:
         if value is None:
             continue
         flagged = _FLAGS.get(key, lambda _v: False)(value)
-        accent = "#ef4444" if flagged else "#e2e8f0"
+        accent = "#ef4444" if flagged else "var(--av-border)"
         display_value, display_unit = value, unit
         if use_cm and unit == "mm":
             display_value, display_unit = value / 10, "cm"

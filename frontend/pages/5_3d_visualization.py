@@ -53,8 +53,8 @@ with st.expander("Layers & display", expanded=False):
 
 st.markdown(
     "<div style='display:flex;gap:1rem;align-items:center;margin:0.25rem 0;'>"
-    "<span style='color:#94a3b8;font-size:0.8rem;'>● Selected ROI (risk-colored)</span>"
-    "<span style='color:#94a3b8;font-size:0.8rem;'>● Other detected ROIs (muted)</span>"
+    "<span style='color:var(--av-text-muted);font-size:0.8rem;'>● Selected ROI (risk-colored)</span>"
+    "<span style='color:var(--av-text-muted);font-size:0.8rem;'>● Other detected ROIs (muted)</span>"
     "</div>",
     unsafe_allow_html=True,
 )

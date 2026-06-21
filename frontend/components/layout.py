@@ -18,46 +18,88 @@ _STATUS_COLORS = {
     "skipped": "#6b7280",
 }
 
-_CSS = """
+_THEMES = {
+    "light": {
+        "page_bg": "#f8fafc",
+        "card_bg": "#ffffff",
+        "border": "#e2e8f0",
+        "text_primary": "#0f172a",
+        "text_secondary": "#64748b",
+        "text_muted": "#94a3b8",
+        "soft_bg": "#f8fafc",
+    },
+    "dark": {
+        "page_bg": "#0b1220",
+        "card_bg": "#16213a",
+        "border": "#27324a",
+        "text_primary": "#e8edf7",
+        "text_secondary": "#a6b3c9",
+        "text_muted": "#7b89a3",
+        "soft_bg": "#101a2e",
+    },
+}
+
+
+def theme_toggle() -> str:
+    """Sidebar dark/light switch. Returns the active theme name, persisted across reruns."""
+    was_dark = st.session_state.get("av_theme", "light") == "dark"
+    with st.sidebar:
+        is_dark = st.toggle("🌙 Dark mode" if was_dark else "☀️ Light mode", value=was_dark, key="av_theme_toggle")
+    theme = "dark" if is_dark else "light"
+    st.session_state["av_theme"] = theme
+    if is_dark != was_dark:
+        st.rerun()  # refresh immediately so the label matches the new state, not the old one
+    return theme
+
+
+def _build_css(theme: str) -> str:
+    t = _THEMES.get(theme, _THEMES["light"])
+    return f"""
 <style>
-:root {
+:root {{
     --av-blue: #2563eb;
     --av-teal: #0d9488;
     --av-purple: #7c3aed;
-    --av-bg-soft: #f8fafc;
-    --av-border: #e2e8f0;
-}
+    --av-bg-soft: {t['soft_bg']};
+    --av-border: {t['border']};
+    --av-card-bg: {t['card_bg']};
+    --av-text-primary: {t['text_primary']};
+    --av-text-secondary: {t['text_secondary']};
+    --av-text-muted: {t['text_muted']};
+}}
 
-[data-testid="stAppViewContainer"], .stApp, .main, .block-container { background: transparent !important; }
+[data-testid="stAppViewContainer"], .stApp, .main, .block-container {{ background: transparent !important; }}
+html, body, [data-testid="stMarkdownContainer"] {{ color: var(--av-text-primary); }}
+* {{ transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease; }}
 
-.av-bg-wrap {
+.av-bg-wrap {{
     position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
-    background: #f8fafc;
-}
-.av-bg-wrap .blob {
+    background: {t['page_bg']};
+}}
+.av-bg-wrap .blob {{
     position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.16;
-}
-.av-bg-wrap .blob.b1 { width: 32rem; height: 32rem; top: -8rem; left: -6rem; background: var(--av-blue); animation: av-orbit-a 50s linear infinite; }
-.av-bg-wrap .blob.b2 { width: 26rem; height: 26rem; bottom: -6rem; right: -4rem; background: var(--av-teal); animation: av-orbit-b 60s linear infinite; }
-.av-bg-wrap .blob.b3 { width: 22rem; height: 22rem; top: 40%; left: 60%; background: var(--av-purple); animation: av-orbit-a 70s linear infinite reverse; }
-.av-bg-wrap .brain {
+}}
+.av-bg-wrap .blob.b1 {{ width: 32rem; height: 32rem; top: -8rem; left: -6rem; background: var(--av-blue); animation: av-orbit-a 50s linear infinite; }}
+.av-bg-wrap .blob.b2 {{ width: 26rem; height: 26rem; bottom: -6rem; right: -4rem; background: var(--av-teal); animation: av-orbit-b 60s linear infinite; }}
+.av-bg-wrap .blob.b3 {{ width: 22rem; height: 22rem; top: 40%; left: 60%; background: var(--av-purple); animation: av-orbit-a 70s linear infinite reverse; }}
+.av-bg-wrap .brain {{
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     font-size: 30rem; line-height: 1; opacity: 0.07;
     filter: saturate(2.2) hue-rotate(195deg) brightness(1.3);
     animation: av-spin-cw 50s linear infinite;
-}
-.av-bg-wrap .brain.inner {
+}}
+.av-bg-wrap .brain.inner {{
     font-size: 17rem; opacity: 0.06; animation: av-spin-ccw 30s linear infinite;
     filter: saturate(2.4) hue-rotate(150deg) brightness(1.3);
-}
-@keyframes av-spin-cw  { from { transform: translate(-50%,-50%) rotate(0deg); }   to { transform: translate(-50%,-50%) rotate(360deg); } }
-@keyframes av-spin-ccw { from { transform: translate(-50%,-50%) rotate(360deg); } to { transform: translate(-50%,-50%) rotate(0deg); } }
-@keyframes av-orbit-a { from { transform: rotate(0deg) translateX(2rem); } to { transform: rotate(360deg) translateX(2rem); } }
-@keyframes av-orbit-b { from { transform: rotate(0deg) translateX(-3rem); } to { transform: rotate(-360deg) translateX(-3rem); } }
+}}
+@keyframes av-spin-cw  {{ from {{ transform: translate(-50%,-50%) rotate(0deg); }}   to {{ transform: translate(-50%,-50%) rotate(360deg); }} }}
+@keyframes av-spin-ccw {{ from {{ transform: translate(-50%,-50%) rotate(360deg); }} to {{ transform: translate(-50%,-50%) rotate(0deg); }} }}
+@keyframes av-orbit-a {{ from {{ transform: rotate(0deg) translateX(2rem); }} to {{ transform: rotate(360deg) translateX(2rem); }} }}
+@keyframes av-orbit-b {{ from {{ transform: rotate(0deg) translateX(-3rem); }} to {{ transform: rotate(-360deg) translateX(-3rem); }} }}
 
-.block-container { padding-top: 1.5rem; max-width: 1400px; }
+.block-container {{ padding-top: 1.5rem; max-width: 1400px; }}
 
-.av-topbar {
+.av-topbar {{
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -66,60 +108,61 @@ _CSS = """
     padding: 0.9rem 1.5rem;
     margin-bottom: 1.25rem;
     color: #f1f5f9;
-}
-.av-topbar-title { font-size: 1.15rem; font-weight: 700; letter-spacing: .01em; }
-.av-topbar-sub { font-size: 0.78rem; color: #94a3b8; margin-top: 0.1rem; }
-.av-topbar-right { display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; }
+}}
+.av-topbar-title {{ font-size: 1.15rem; font-weight: 700; letter-spacing: .01em; }}
+.av-topbar-sub {{ font-size: 0.78rem; color: #94a3b8; margin-top: 0.1rem; }}
+.av-topbar-right {{ display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; }}
 
-.av-card {
-    background: #ffffff;
+.av-card {{
+    background: var(--av-card-bg);
     border-radius: 12px;
     padding: 1rem 1.25rem;
     box-shadow: 0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
     border: 1px solid var(--av-border);
     border-top: 3px solid transparent;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-.av-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(15,23,42,0.10); }
-.av-card.accent-blue   { border-top-color: var(--av-blue); }
-.av-card.accent-teal   { border-top-color: var(--av-teal); }
-.av-card.accent-purple { border-top-color: var(--av-purple); }
-.av-card-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: .06em; color: #64748b; font-weight: 700; }
-.av-card-value { font-size: 1.5rem; font-weight: 700; color: #0f172a; margin-top: 0.15rem; line-height: 1.2; }
-.av-card-sub { font-size: 0.75rem; color: #94a3b8; margin-top: 0.2rem; }
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.25s ease, border-color 0.25s ease;
+}}
+.av-card:hover {{ transform: translateY(-2px); box-shadow: 0 6px 16px rgba(15,23,42,0.10); }}
+.av-card.accent-blue   {{ border-top-color: var(--av-blue); }}
+.av-card.accent-teal   {{ border-top-color: var(--av-teal); }}
+.av-card.accent-purple {{ border-top-color: var(--av-purple); }}
+.av-card-label {{ font-size: 0.7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--av-text-secondary); font-weight: 700; }}
+.av-card-value {{ font-size: 1.5rem; font-weight: 700; color: var(--av-text-primary); margin-top: 0.15rem; line-height: 1.2; }}
+.av-card-sub {{ font-size: 0.75rem; color: var(--av-text-muted); margin-top: 0.2rem; }}
 
-.av-badge {
+.av-badge {{
     display: inline-block; padding: 0.28rem 0.75rem; border-radius: 999px;
     font-weight: 700; font-size: 0.78rem; letter-spacing: .02em;
-}
+}}
 
-.av-section-header {
-    font-size: 1.05rem; font-weight: 700; color: #0f172a; margin: 0.25rem 0 0.75rem 0;
+.av-section-header {{
+    font-size: 1.05rem; font-weight: 700; color: var(--av-text-primary); margin: 0.25rem 0 0.75rem 0;
     padding-left: 0.65rem; border-left: 4px solid var(--av-blue);
-}
-.av-caption-muted { color: #94a3b8; font-size: 0.82rem; }
+}}
+.av-caption-muted {{ color: var(--av-text-muted); font-size: 0.82rem; }}
 
-.av-gradient-text {
+.av-gradient-text {{
     background: linear-gradient(90deg, var(--av-blue), var(--av-purple), var(--av-teal)) !important;
     -webkit-background-clip: text !important; background-clip: text !important;
     color: transparent !important; -webkit-text-fill-color: transparent !important;
-}
+}}
 
-.av-empty-state {
+.av-empty-state {{
     text-align: center; padding: 3rem 1.5rem; border: 1.5px dashed var(--av-border);
-    border-radius: 16px; background: var(--av-bg-soft); color: #64748b;
-}
-.av-empty-state .icon { font-size: 2.4rem; margin-bottom: 0.5rem; }
-.av-empty-state .title { font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 0.35rem; }
+    border-radius: 16px; background: var(--av-bg-soft); color: var(--av-text-secondary);
+}}
+.av-empty-state .icon {{ font-size: 2.4rem; margin-bottom: 0.5rem; }}
+.av-empty-state .title {{ font-size: 1.05rem; font-weight: 700; color: var(--av-text-primary); margin-bottom: 0.35rem; }}
 
-.av-mock-tag {
+.av-mock-tag {{
     display: inline-block; background: #fef3c7; color: #92400e; border-radius: 6px;
     padding: 0.12rem 0.55rem; font-size: 0.68rem; font-weight: 700; letter-spacing: .03em;
     text-transform: uppercase; vertical-align: middle; margin-left: 0.4rem;
-}
+}}
 
-[data-testid="stSidebarNav"] { padding-top: 0.5rem; }
+[data-testid="stSidebarNav"] {{ padding-top: 0.5rem; }}
 </style>
+{_native_widget_css(theme)}
 <div class="av-bg-wrap">
     <div class="blob b1"></div>
     <div class="blob b2"></div>
@@ -130,8 +173,56 @@ _CSS = """
 """
 
 
-def inject_css() -> None:
-    st.markdown(_CSS, unsafe_allow_html=True)
+def _native_widget_css(theme: str) -> str:
+    """Re-skin Streamlit's own widget chrome (buttons, inputs, sidebar, etc.)
+    for dark mode — our custom .av-* classes don't cover these."""
+    if theme != "dark":
+        return ""
+    t = _THEMES["dark"]
+    return f"""
+<style>
+[data-testid="stSidebar"] {{ background-color: {t['page_bg']}; border-right: 1px solid {t['border']}; }}
+[data-testid="stSidebarNav"] a, [data-testid="stSidebar"] label, [data-testid="stSidebar"] p {{
+    color: {t['text_primary']} !important;
+}}
+[data-testid="stSidebarNav"] a[aria-current="page"] {{ background-color: {t['card_bg']}; }}
+
+[data-testid="stFileUploaderDropzone"], [data-testid="stFileUploaderDropzoneInstructions"] {{
+    background-color: {t['card_bg']} !important; border-color: {t['border']} !important;
+}}
+[data-testid="stFileUploaderDropzoneInstructions"] span, [data-testid="stFileUploaderDropzoneInstructions"] small {{
+    color: {t['text_secondary']} !important;
+}}
+[data-testid="stFileUploaderFile"] {{ background-color: {t['card_bg']} !important; }}
+
+button[data-testid="stBaseButton-secondary"] {{
+    background-color: {t['card_bg']} !important; color: {t['text_primary']} !important;
+    border-color: {t['border']} !important;
+}}
+
+[data-testid="stTextInput"] input, [data-testid="stNumberInput"] input, [data-testid="stTextArea"] textarea {{
+    background-color: {t['card_bg']} !important; color: {t['text_primary']} !important;
+    border-color: {t['border']} !important;
+}}
+[data-baseweb="select"] > div {{
+    background-color: {t['card_bg']} !important; color: {t['text_primary']} !important;
+    border-color: {t['border']} !important;
+}}
+[data-testid="stWidgetLabel"] p {{ color: {t['text_secondary']} !important; }}
+
+[data-testid="stExpander"] {{ background-color: {t['card_bg']} !important; border-color: {t['border']} !important; }}
+[data-testid="stTabs"] [data-baseweb="tab-list"] {{ background-color: transparent; border-bottom-color: {t['border']}; }}
+[data-testid="stTabs"] button[role="tab"] {{ color: {t['text_secondary']}; }}
+[data-testid="stTabs"] button[aria-selected="true"] {{ color: {t['text_primary']}; }}
+
+[data-testid="stDataFrame"] {{ background-color: {t['card_bg']} !important; }}
+[data-testid="stMetric"] {{ background-color: {t['card_bg']}; border-radius: 8px; padding: 0.4rem; }}
+</style>
+"""
+
+
+def inject_css(theme: str = "light") -> None:
+    st.markdown(_build_css(theme), unsafe_allow_html=True)
 
 
 def mock_tag(text: str = "Demo data") -> str:

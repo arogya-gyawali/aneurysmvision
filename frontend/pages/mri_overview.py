@@ -29,65 +29,81 @@ from frontend.components import layout
 result = layout.require_result()
 layout.top_bar(result, "MRI")
 
+_theme = st.session_state.get("av_theme", "light")
+_PALETTES = {
+    "light": dict(
+        page_bg="#f4f6f9", card_bg="#ffffff", border="#e2e8f0", heading="#0b2f5c",
+        body="#475569", muted="#64748b", icon_bg="#eaf1fb",
+        soon_bg="#eef1f5", soon_border="#c7d2e0", soon_tag_bg="#dbe6f3",
+    ),
+    "dark": dict(
+        page_bg="#0c1626", card_bg="#132338", border="#23344c", heading="#cfe1f7",
+        body="#aebed4", muted="#8ea0bd", icon_bg="#1c3050",
+        soon_bg="#132338", soon_border="#2c4060", soon_tag_bg="#1c3050",
+    ),
+}
+_p = _PALETTES.get(_theme, _PALETTES["light"])
+
 st.markdown(
-    """
+    f"""
     <style>
     /* Suppress the app-wide animated background + gradient topbar on this
        page only — institutional sites read calm, not flashy. */
-    [data-testid="stAppViewContainer"], .stApp, .main, .block-container {
-        background: #f4f6f9 !important;
-    }
-    .av-topbar { background: linear-gradient(120deg, #0b2f5c 0%, #14467f 100%) !important; }
+    [data-testid="stAppViewContainer"], .stApp, .main, .block-container {{
+        background: {_p['page_bg']} !important;
+    }}
+    .av-topbar {{ background: linear-gradient(120deg, #0b2f5c 0%, #14467f 100%) !important; }}
 
-    .nyhh-eyebrow {
+    .nyhh-eyebrow {{
         text-transform: uppercase; letter-spacing: .12em; font-size: 0.72rem;
         font-weight: 700; color: #2f6fb3; margin-bottom: 0.4rem;
-    }
-    .nyhh-hero {
+    }}
+    .nyhh-hero {{
         background: linear-gradient(120deg, #0b2f5c 0%, #14467f 100%);
         border-radius: 16px; padding: 2.5rem 2.5rem 2rem; color: #ffffff; margin-bottom: 1.5rem;
-    }
-    .nyhh-hero h1 { color: #ffffff; font-weight: 800; margin: 0 0 0.6rem 0; font-size: 2.1rem; }
-    .nyhh-hero p { color: #cbd8ea; font-size: 1.02rem; max-width: 700px; line-height: 1.55; margin: 0; }
+    }}
+    .nyhh-hero h1 {{ color: #ffffff; font-weight: 800; margin: 0 0 0.6rem 0; font-size: 2.1rem; }}
+    .nyhh-hero p {{ color: #cbd8ea; font-size: 1.02rem; max-width: 700px; line-height: 1.55; margin: 0; }}
 
-    .nyhh-action {
-        background: #ffffff; border-radius: 12px; padding: 1.1rem 1rem; text-align: center;
-        height: 100%; border: 1px solid #e2e8f0;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-    .nyhh-action:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(11,47,92,0.12); }
-    .nyhh-action .icon-circle {
-        width: 48px; height: 48px; border-radius: 50%; background: #eaf1fb; color: #0b2f5c;
+    .nyhh-action {{
+        background: {_p['card_bg']}; border-radius: 12px; padding: 1.1rem 1rem; text-align: center;
+        height: 100%; border: 1px solid {_p['border']};
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.25s ease;
+    }}
+    .nyhh-action:hover {{ transform: translateY(-2px); box-shadow: 0 8px 20px rgba(11,47,92,0.12); }}
+    .nyhh-action .icon-circle {{
+        width: 48px; height: 48px; border-radius: 50%; background: {_p['icon_bg']}; color: {_p['heading']};
         display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
         margin: 0 auto 0.6rem auto;
-    }
-    .nyhh-action h5 { margin: 0 0 0.25rem 0; font-size: 0.95rem; color: #0b2f5c; }
-    .nyhh-action p { margin: 0; font-size: 0.78rem; color: #64748b; }
+    }}
+    .nyhh-action h5 {{ margin: 0 0 0.25rem 0; font-size: 0.95rem; color: {_p['heading']}; }}
+    .nyhh-action p {{ margin: 0; font-size: 0.78rem; color: {_p['muted']}; }}
 
-    .nyhh-section { padding: 1.75rem 0 0.5rem 0; }
-    .nyhh-section h2 { color: #0b2f5c; font-weight: 800; font-size: 1.5rem; margin: 0 0 0.25rem 0; }
-    .nyhh-section .sub { color: #64748b; font-size: 0.92rem; margin-bottom: 1.25rem; }
+    .nyhh-section {{ padding: 1.75rem 0 0.5rem 0; }}
+    .nyhh-section h2 {{ color: {_p['heading']}; font-weight: 800; font-size: 1.5rem; margin: 0 0 0.25rem 0; }}
+    .nyhh-section .sub {{ color: {_p['muted']}; font-size: 0.92rem; margin-bottom: 1.25rem; }}
 
-    .nyhh-card {
-        background: #ffffff; border: 1px solid #e2e8f0; border-left: 4px solid #2f6fb3;
+    .nyhh-card {{
+        background: {_p['card_bg']}; border: 1px solid {_p['border']}; border-left: 4px solid #2f6fb3;
         border-radius: 10px; padding: 1.1rem 1.25rem; height: 100%;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-    .nyhh-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(11,47,92,0.10); }
-    .nyhh-card h4 { margin: 0 0 0.35rem 0; font-size: 0.98rem; color: #0b2f5c; }
-    .nyhh-card p { margin: 0; font-size: 0.83rem; color: #475569; line-height: 1.45; }
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.25s ease;
+    }}
+    .nyhh-card:hover {{ transform: translateY(-2px); box-shadow: 0 8px 20px rgba(11,47,92,0.10); }}
+    .nyhh-card h4 {{ margin: 0 0 0.35rem 0; font-size: 0.98rem; color: {_p['heading']}; }}
+    .nyhh-card p {{ margin: 0; font-size: 0.83rem; color: {_p['body']}; line-height: 1.45; }}
 
-    .nyhh-feature { border-left-color: #0d9488; }
-    .nyhh-readmore { color: #2f6fb3; font-size: 0.8rem; font-weight: 700; text-decoration: none; }
+    .nyhh-feature {{ border-left-color: #0d9488; }}
+    .nyhh-readmore {{ color: #2f6fb3; font-size: 0.8rem; font-weight: 700; text-decoration: none; }}
 
-    .nyhh-soon {
-        background: #eef1f5; border: 1px dashed #c7d2e0; border-radius: 10px; padding: 0.9rem 1.1rem;
-    }
-    .nyhh-soon .tag {
-        display: inline-block; background: #dbe6f3; color: #0b2f5c; border-radius: 6px;
+    .nyhh-soon {{
+        background: {_p['soon_bg']}; border: 1px dashed {_p['soon_border']}; border-radius: 10px; padding: 0.9rem 1.1rem;
+    }}
+    .nyhh-soon strong {{ color: {_p['heading']}; }}
+    .nyhh-soon .tag {{
+        display: inline-block; background: {_p['soon_tag_bg']}; color: {_p['heading']}; border-radius: 6px;
         padding: 0.1rem 0.5rem; font-size: 0.66rem; font-weight: 700; letter-spacing: .03em;
         text-transform: uppercase; margin-left: 0.4rem;
-    }
+    }}
     </style>
     """,
     unsafe_allow_html=True,

@@ -27,7 +27,8 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-layout.inject_css()
+_theme = layout.theme_toggle()
+layout.inject_css(_theme)
 
 _PAGES_DIR = Path(__file__).parent / "pages"
 
