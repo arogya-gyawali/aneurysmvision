@@ -1,0 +1,19 @@
+streamlit>=1.35
+plotly>=5.20
+pandas>=2.0
+numpy>=1.26
+pydantic>=2.0,<3.0
+
+# Optional: enables real GLB mesh loading in components/mesh_viewer.py
+# (Checkpoint 3). Without it, the viewer falls back to a mock mesh
+# generated from biomarker dimensions — no code changes needed either way.
+trimesh>=4.0
+
+# Optional: enables PDF export on the Report/Export page. Without it,
+# Markdown + JSON export still work and the PDF button just disables.
+fpdf2>=2.7
+
+# Optional: enables live Claude follow-up Q&A on the AI Summary page.
+# Without it (or without ANTHROPIC_API_KEY set), the chat falls back
+# to an offline canned answer bank.
+anthropic>=0.25
