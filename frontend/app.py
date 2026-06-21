@@ -5,7 +5,7 @@ Run with:
 
 This script only sets up page config, shared CSS, and navigation. Page
 content lives in frontend/pages/ — one module per item in the product's
-10-page workflow (Home, Upload, Patient Overview, ROI Selection, 3D
+workflow (Home, MRI, Upload, Patient Overview, ROI Selection, 3D
 Visualization, Cross-Sections, Measurements, AI Summary, Report & Export,
 Settings & Help).
 """
@@ -34,6 +34,7 @@ _PAGES_DIR = Path(__file__).parent / "pages"
 nav = st.navigation(
     [
         st.Page(_PAGES_DIR / "1_home.py", title="Home", icon="🏠", default=True),
+        st.Page(_PAGES_DIR / "mri_overview.py", title="MRI", icon="🧲"),
         st.Page(_PAGES_DIR / "2_upload.py", title="Upload", icon="📤"),
         st.Page(_PAGES_DIR / "3_patient_overview.py", title="Patient Overview", icon="🧾"),
         st.Page(_PAGES_DIR / "4_roi_selection.py", title="ROI Selection", icon="🎯"),
