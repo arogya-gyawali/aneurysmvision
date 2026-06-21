@@ -1,10 +1,13 @@
 """Contract-driven data access layer for the AneurysmVision frontend.
 
 Per backend/api_contract.md, the frontend consumes a single typed response
-(`AnalysisResult`). Until the backend pipeline is implemented end-to-end,
-this module serves backend/sample_output.json as that response. Swapping in
-the live pipeline later only requires changing `run_analysis` below — no
-component code depends on this module's internals.
+(`AnalysisResult`). This module serves either the live backend pipeline
+output or backend/sample_output.json as that response, and runs both through
+the normalization layer in `frontend.normalize` so components always see one
+stable, frontend-friendly shape (BIDS aliases + deterministic defaults).
+
+The backend pipeline is never modified; normalization is a pure read-only
+adapter. See `frontend/normalize.py` for the full schema and mapping rules.
 """
 
 from __future__ import annotations
@@ -12,6 +15,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any
+
+from frontend.normalize import normalize_result
 
 _SAMPLE_PATH = Path(__file__).parent.parent / "backend" / "sample_output.json"
 _BACKEND_AVAILABLE: bool | None = None
@@ -37,7 +42,7 @@ def _load_sample() -> dict[str, Any]:
 
 
 def _sample_with_flag() -> dict[str, Any]:
-    data = _load_sample()
+    data = normalize_result(_load_sample())
     data["_source"] = "sample"
     return data
 
@@ -84,7 +89,12 @@ def run_analysis(
                 return _sample_with_flag()
 
             result = run_pipeline(req)
-            data = result.model_dump(mode="json") if hasattr(result, "model_dump") else dict(result)
+            data = (
+                result.model_dump(mode="json", by_alias=True)
+                if hasattr(result, "model_dump")
+                else dict(result)
+            )
+            data = normalize_result(data)
             data["_source"] = "live"
             return data
         except Exception:
