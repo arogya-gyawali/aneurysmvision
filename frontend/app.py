@@ -30,13 +30,13 @@ st.set_page_config(
 _theme = layout.theme_toggle()
 layout.inject_css(_theme)
 
-_PAGES_DIR = Path(__file__).parent / "pages"
-
+# Paths must be relative to this file (frontend/), not absolute Path objects —
+# Streamlit resolves st.Page paths as main_script_parent / page.
 nav = st.navigation(
     [
-        st.Page(_PAGES_DIR / "1_home.py", title="Home", icon="🏠", default=True),
-        st.Page(_PAGES_DIR / "mri_overview.py", title="MRI", icon="🧲"),
-        st.Page(_PAGES_DIR / "10_settings_help.py", title="Settings & Help", icon="⚙️"),
+        st.Page("pages/1_home.py", title="Home", icon="🏠", default=True),
+        st.Page("pages/mri_overview.py", title="MRI", icon="🧲"),
+        st.Page("pages/10_settings_help.py", title="Settings & Help", icon="⚙️"),
     ]
 )
 nav.run()

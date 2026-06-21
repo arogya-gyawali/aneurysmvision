@@ -224,18 +224,39 @@ Per-stage progress record.
 
 Executed in order by `pipeline.run_pipeline`:
 
-| Order | `name` | Module | Stage 1 status |
+| Order | `name` | Module | Status |
 |---|---|---|---|
 | 1 | `bids_parse` | `bids_parser` | **Implemented** (path discovery + entity parsing) |
-| 2 | `nifti_load` | `nifti_loader` | Stub (`NotImplementedError`) |
-| 3 | `quality_control` | `nifti_loader` | Stub |
-| 4 | `detection` | `roi_extractor` | Stub |
-| 5 | `roi_extraction` | `roi_extractor` | Stub |
-| 6 | `biomarkers` | `biomarkers` | Stub |
-| 7 | `mesh_generation` | `mesh_generator` | Stub (skipped when `generate_mesh=false`) |
-| 8 | `report_generation` | `report_generator` | Stub (skipped when `generate_report=false`) |
+| 2 | `nifti_load` | `nifti_loader` | **Implemented** (nibabel load + metadata) |
+| 3 | `quality_control` | `nifti_loader` | **Implemented** (structural QC + heuristic SNR/CNR/motion) |
+| 4 | `detection` | `roi_extractor` | **Implemented** — placeholder intensity threshold, or loads `segmentation_path` |
+| 5 | `roi_extraction` | `roi_extractor` | **Implemented** (centroids, bounds, voxel counts) |
+| 6 | `biomarkers` | `biomarkers` | **Implemented** — geometry-derived proxies |
+| 7 | `mesh_generation` | `mesh_generator` | **Implemented** (GLB export; skipped when `generate_mesh=false`) |
+| 8 | `report_generation` | `report_generator` | **Implemented** — rule-based, optional Claude (skipped when `generate_report=false`) |
+
+> **Note:** `detection` and `biomarkers` are functional but **not clinically
+> validated** — detection is an intensity-threshold placeholder and biomarkers
+> are bounding-box geometry proxies. See module docstrings for details.
 
 On failure the pipeline returns an `AnalysisResult` with `status: "failed"`, populated `stages` up to the failing stage, and `errors` describing the failure. Earlier stage outputs (e.g. `study.nifti_path` after `bids_parse`) are preserved.
+
+### Frontend normalization layer
+
+The frontend never binds to the raw pipeline dump directly. `frontend/data_client.py`
+runs every response (live or `sample_output.json`) through `frontend/normalize.py`,
+which produces a single stable, frontend-friendly shape:
+
+- **BIDS aliases:** the live `AnalysisResult.model_dump()` emits Pydantic field
+  names (`subject`, `session`, `acquisition`); the normalizer maps these to the
+  BIDS aliases used here and in `sample_output.json` (`sub`, `ses`, `acq`).
+- **Deterministic defaults:** missing display-only `metadata` keys
+  (`detection_model`, `clabtoolkit_version`, `transport`, `processing_time_ms`)
+  are filled. The live `detection_model` default is the honest
+  `placeholder-intensity-threshold-v0` (the value in `sample_output.json`,
+  `connectomicslab-sliding-window-v1`, is aspirational).
+- **Pass-through:** all real values (study, findings, biomarkers, mesh, report,
+  stages) are preserved untouched.
 
 ---
 

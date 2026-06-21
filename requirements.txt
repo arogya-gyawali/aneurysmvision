@@ -1,1 +1,12 @@
 pydantic>=2.0,<3.0
+
+# Medical imaging layer
+nibabel>=5.3.2
+numpy>=1.23.5
+scipy>=1.10.0
+scikit-image>=0.21.0
+pyvista>=0.43.0
+clabtoolkit>=0.4.3
+
+# Optional narrative engines (rule-based fallbacks work without these)
+anthropic>=0.40.0
