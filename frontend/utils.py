@@ -107,3 +107,15 @@ def format_stage_status(stage: dict[str, Any]) -> tuple[str, str]:
     if status == "skipped":
         return "—", "#6b7280"
     return "●", "#3b82f6"
+
+
+def risk_badge_html(risk: RiskAssessment, size: str = "md") -> str:
+    """Inline HTML pill badge for a risk level, used across all panels."""
+    pad = "0.3rem 0.85rem" if size == "md" else "0.2rem 0.6rem"
+    font_size = "0.85rem" if size == "md" else "0.72rem"
+    return (
+        f"<span style='display:inline-block;padding:{pad};border-radius:999px;"
+        f"background:{risk.color}1a;color:{risk.color};font-weight:700;"
+        f"font-size:{font_size};letter-spacing:.02em;'>"
+        f"{risk.level.upper()} · {risk.score}/100</span>"
+    )

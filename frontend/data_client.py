@@ -1,17 +1,15 @@
 """Contract-driven data access layer for the AneurysmVision frontend.
 
-Execution priority:
-  1. In-process call to backend.pipeline.run_pipeline (when backend importable)
-  2. Fall back to backend/sample_output.json for offline/demo mode
-
-The frontend never calls HTTP endpoints directly — all backend access goes
-through this module so the UI stays decoupled from transport details.
+Per backend/api_contract.md, the frontend consumes a single typed response
+(`AnalysisResult`). Until the backend pipeline is implemented end-to-end,
+this module serves backend/sample_output.json as that response. Swapping in
+the live pipeline later only requires changing `run_analysis` below — no
+component code depends on this module's internals.
 """
 
 from __future__ import annotations
 
 import json
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -24,8 +22,9 @@ def _check_backend() -> bool:
     if _BACKEND_AVAILABLE is not None:
         return _BACKEND_AVAILABLE
     try:
-        import backend.pipeline  # noqa: F401
         import backend.models  # noqa: F401
+        import backend.pipeline  # noqa: F401
+
         _BACKEND_AVAILABLE = True
     except Exception:
         _BACKEND_AVAILABLE = False
@@ -37,16 +36,11 @@ def _load_sample() -> dict[str, Any]:
         return json.load(f)
 
 
-def _result_to_dict(result: Any) -> dict[str, Any]:
-    """Convert a Pydantic AnalysisResult to a plain dict."""
-    if hasattr(result, "model_dump"):
-        return result.model_dump(mode="json")
-    return dict(result)
+def _sample_with_flag() -> dict[str, Any]:
+    data = _load_sample()
+    data["_source"] = "sample"
+    return data
 
-
-# ---------------------------------------------------------------------------
-# Public API
-# ---------------------------------------------------------------------------
 
 def backend_alive() -> bool:
     """Return True when the backend package is importable."""
@@ -61,10 +55,10 @@ def run_analysis(
     generate_report: bool = True,
     generate_mesh: bool = True,
 ) -> dict[str, Any]:
-    """Run the full pipeline and return an AnalysisResult dict.
+    """Run the pipeline and return an AnalysisResult dict.
 
-    Falls back to sample_output.json when the pipeline raises any error
-    (including NotImplementedError for unbuilt stages).
+    Falls back to sample_output.json whenever the live pipeline is
+    unavailable or raises (expected while backend stages are stubs).
     """
     if _check_backend():
         try:
@@ -72,15 +66,11 @@ def run_analysis(
             from backend.pipeline import run_pipeline
 
             if dataset_root and subject:
-                entities = BidsEntities(
-                    sub=subject,
-                    ses=session,
-                    suffix="angio",
-                    extension="nii.gz",
-                )
                 req = AnalysisRequest(
                     dataset_root=dataset_root,
-                    bids_entities=entities,
+                    bids_entities=BidsEntities(
+                        sub=subject, ses=session, suffix="angio", extension="nii.gz"
+                    ),
                     generate_report=generate_report,
                     generate_mesh=generate_mesh,
                 )
@@ -94,7 +84,7 @@ def run_analysis(
                 return _sample_with_flag()
 
             result = run_pipeline(req)
-            data = _result_to_dict(result)
+            data = result.model_dump(mode="json") if hasattr(result, "model_dump") else dict(result)
             data["_source"] = "live"
             return data
         except Exception:
@@ -104,36 +94,25 @@ def run_analysis(
 
 
 def get_sample_result() -> dict[str, Any]:
-    """Return the sample output with demo flag, always."""
+    """Return the sample output with the demo flag set, always."""
     return _sample_with_flag()
 
 
-def _sample_with_flag() -> dict[str, Any]:
-    data = _load_sample()
-    data["_source"] = "sample"
-    return data
-
-
 def aneurysm_list(result: dict[str, Any]) -> list[dict[str, Any]]:
-    """Extract the aneurysms list from an AnalysisResult dict."""
     return result.get("aneurysms", [])
 
 
 def get_report(result: dict[str, Any]) -> dict[str, Any] | None:
-    """Extract the ReportDraft dict from an AnalysisResult dict."""
     return result.get("report")
 
 
 def get_study(result: dict[str, Any]) -> dict[str, Any]:
-    """Extract the StudyMetadata dict from an AnalysisResult dict."""
     return result.get("study", {})
 
 
 def get_stages(result: dict[str, Any]) -> list[dict[str, Any]]:
-    """Extract pipeline stages list from an AnalysisResult dict."""
     return result.get("stages", [])
 
 
 def is_demo(result: dict[str, Any]) -> bool:
-    """Return True when the result came from the sample JSON rather than live pipeline."""
     return result.get("_source") == "sample"
