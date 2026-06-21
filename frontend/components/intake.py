@@ -23,16 +23,19 @@ _BIDS_RE = re.compile(
 
 
 def _run(uploaded, subject: str, session: str | None, gen_report: bool, gen_mesh: bool, sig: str) -> None:
-    suffix = ".nii.gz" if uploaded.name.endswith(".gz") else ".nii"
-    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-        tmp.write(uploaded.getvalue())
-        tmp_path = tmp.name
+    # Keep the original BIDS-named filename on disk (not a random tempfile
+    # name) — the backend identifies sub/ses by parsing the filename itself.
+    tmp_dir = tempfile.mkdtemp(prefix="av_upload_")
+    tmp_path = os.path.join(tmp_dir, uploaded.name)
+    with open(tmp_path, "wb") as f:
+        f.write(uploaded.getvalue())
 
     with st.spinner(f"Analyzing sub-{subject} automatically — detection, biomarkers, mesh, and AI summary…"):
         st.session_state["av_result"] = dc.run_analysis(
             nifti_path=tmp_path, generate_report=gen_report, generate_mesh=gen_mesh,
         )
     os.unlink(tmp_path)
+    os.rmdir(tmp_dir)
     st.session_state.pop("av_selected_id", None)
     st.session_state["av_last_upload_sig"] = sig
     st.toast(f"Analysis complete for sub-{subject}", icon="✅")
